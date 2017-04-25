@@ -1,0 +1,9 @@
+c:\users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.exe.config
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.exe
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.pdb
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.csprojResolveAssemblyReference.cache
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.Form1.resources
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.Properties.Resources.resources
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.csproj.GenerateResource.Cache
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.exe
+C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.pdb
