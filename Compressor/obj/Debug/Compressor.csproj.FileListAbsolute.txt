@@ -7,3 +7,6 @@ C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\De
 C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.csproj.GenerateResource.Cache
 C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.exe
 C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.pdb
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.exe.config
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.exe
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.pdb

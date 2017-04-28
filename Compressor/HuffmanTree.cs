@@ -7,61 +7,6 @@ using System.Threading.Tasks;
 
 namespace Compressor
 {
-    public class Node
-    {
-        public byte value { get; set; }
-        public int frequency { get; set; }
-        public Node right { get; set; }
-        public Node left { get; set; }
-
-        public List<bool> Traverse(char symbol, List<bool> data)
-        {
-            // Leaf
-            if (right == null && left == null)
-            {
-                if (symbol.Equals(this.value))
-                {
-                    return data;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                List<bool> l = null;
-                List<bool> r = null;
-
-                if (left != null)
-                {
-                    List<bool> leftPath = new List<bool>();
-                    leftPath.AddRange(data);
-                    leftPath.Add(false);
-
-                    l = left.Traverse(symbol, leftPath);
-                }
-
-                if (right != null)
-                {
-                    List<bool> rightPath = new List<bool>();
-                    rightPath.AddRange(data);
-                    rightPath.Add(true);
-                    r = right.Traverse(symbol, rightPath);
-                }
-
-                if (l != null)
-                {
-                    return l;
-                }
-                else
-                {
-                    return r;
-                }
-            }
-        }
-    }
-
     //class HuffmanTree
     //{
     //    private List<Node> nodes = new List<Node>();
