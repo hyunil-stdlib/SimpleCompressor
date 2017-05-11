@@ -11,14 +11,22 @@ using System.Windows.Forms;
 
 namespace Compressor
 {
-    public class HuffmanTree
+    public class HuffmanNode
     {
         public byte mValue;
         public int mFreq;
-        public HuffmanTree mRight;
-        public HuffmanTree mLeft;
+        public HuffmanNode mRight;
+        public HuffmanNode mLeft;
 
-        public HuffmanTree()
+        public HuffmanNode()
+        {
+            mValue = 0;
+            mFreq = 0;
+            mRight = null;
+            mLeft = null;
+        }
+
+        public void DeleteNode()
         {
             mValue = 0;
             mFreq = 0;
@@ -29,16 +37,27 @@ namespace Compressor
 
     public partial class Form1 : Form
     {
-        HuffmanTree[] huffList = new HuffmanTree[256];
-        HuffmanTree headNode = new HuffmanTree();
+        HuffmanNode[] huffList = new HuffmanNode[256];
+        HuffmanNode headNode = new HuffmanNode();
 
-        byte[] dataArray;  // 16MB
+        FileStream fsin;
+        FileStream fsout;
 
         int[] freq = new int[256];
-        int nodeCount = 0;
+        int nodeCount;
 
         uint[] huffCode = new uint[256];
         int[] huffLength = new int[256];
+
+        string fileName;
+
+        uint cmpByte = 0;
+        int cmpBit = 7;
+
+        uint extByte = 0;
+        int extBit = -1;
+
+        long oriFileSize;
 
         public Form1()
         {
@@ -52,48 +71,106 @@ namespace Compressor
             if (fd.ShowDialog() == DialogResult.OK)
             {
                 label1.Text = fd.FileName;
+                fileName = fd.FileName.Substring(fd.FileName.LastIndexOf("\\") + 1, fd.FileName.IndexOf(".") - fd.FileName.LastIndexOf("\\") - 1);
 
-                FileStream fs = new FileStream(fd.FileName, FileMode.Open);
-                fs.Seek(0, SeekOrigin.Begin);
+                fsin = new FileStream(fd.FileName, FileMode.Open);
 
-                byte[] temp = new byte[16777216];
-
-                int size = 0;
-                for (; size < fs.Length; )
-                {
-                    temp[size++] = (byte)fs.ReadByte();
-                }
-
-                dataArray = new byte[size];
-                for (int i=0; i < size; i++)
-                {
-                    dataArray[i] = temp[i];
-                }
+                fsin.Seek(0, SeekOrigin.Begin);
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Calcfrequency();
+            SaveFileDialog fd = new SaveFileDialog();
+            fd.FileName = fileName;
+            fd.DefaultExt = "cmp";
+
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                fsout = new FileStream(fd.FileName, FileMode.Create);
+                fsout.Seek(0, SeekOrigin.Begin);
+                Compress();
+
+                DeleteHuffTree();
+
+                fsin.Dispose();
+                fsout.Dispose();
+
+                fsin.Close();
+                fsout.Close();
+
+                MessageBox.Show("압축 완료");
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
 
+            SaveFileDialog fd = new SaveFileDialog();
+            fd.FileName = fileName;
+
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                fsout = new FileStream(fd.FileName, FileMode.Create);
+                fsout.Seek(0, SeekOrigin.Begin);
+                Extract();
+
+                DeleteHuffTree();
+
+                fsin.Dispose();
+                fsout.Dispose();
+
+                fsin.Close();
+                fsout.Close();
+
+                MessageBox.Show("압축 해제 완료");
+            }
+        }
+
+        private void DeleteHuffTree()
+        {
+            Stack<HuffmanNode> nodes = new Stack<HuffmanNode>();
+            nodes.Push(headNode);
+
+            while (nodes.Count > 0)
+            {
+                HuffmanNode i = nodes.Pop();
+
+                if (i.mRight !=  null)
+                    nodes.Push(i.mRight);
+
+                if (i.mLeft != null)
+                    nodes.Push(i.mLeft);
+
+                i.DeleteNode();
+            }
+
+            for (int i = 0; i < 256; i++)
+            {
+                huffList[i] = null;
+                freq[i] = 0;
+                huffCode[i] = 0;
+                huffLength[i] = 0;
+            }
+
+            cmpByte = 0;
+            cmpBit = 7;
+
+            extByte = 0;
+            extBit = -1;
         }
 
         private void Calcfrequency()
         {
-            foreach (byte b in dataArray)
+            do
             {
-                freq[b]++;
+                int value = fsin.ReadByte();
+                freq[value]++;
             }
+            while (fsin.Position < fsin.Length);
 
-            //int size = 0;
-            //for (int i = 0; i < freq.Length; i++)
-            //{
-            //    size += freq[i];
-            //}
+
+            fsin.Seek(0, SeekOrigin.Begin);
         }
 
         private int FindMinFrequency(int index)
@@ -111,11 +188,13 @@ namespace Compressor
 
         public void MakeHuffmanTree()
         {
+            nodeCount = 0;
+
             for (int i = 0; i < 256; i++)
             {
                 if (freq[i] > 0)
                 {
-                    HuffmanTree node = new HuffmanTree();
+                    HuffmanNode node = new HuffmanNode();
                     node.mValue = (byte)i;
                     node.mFreq = freq[i];
                     node.mRight = null;
@@ -127,21 +206,20 @@ namespace Compressor
                 }
             }
 
-
             int head = nodeCount;
 
             while (head > 1)
             {
                 int min = FindMinFrequency(head);
-                HuffmanTree node1 = huffList[min];
+                HuffmanNode node1 = huffList[min];
 
                 head--;
                 huffList[min] = huffList[head];
 
                 min = FindMinFrequency(head);
-                HuffmanTree node2 = huffList[min];
+                HuffmanNode node2 = huffList[min];
 
-                HuffmanTree node = new HuffmanTree();
+                HuffmanNode node = new HuffmanNode();
 
                 node.mValue = 0;
                 node.mFreq = node1.mFreq + node2.mFreq;
@@ -154,7 +232,7 @@ namespace Compressor
             headNode = huffList[0];
         }
 
-        public void MakeCode(HuffmanTree node, uint code, int length)
+        public void MakeCode(HuffmanNode node, uint code, int length)
         {
             if (node.mLeft == null && node.mRight == null)
             {
@@ -176,11 +254,170 @@ namespace Compressor
 
         public void WriteByteFromBit(uint code, bool flush)
         {
-            uint nByte = 0;
-            int nBit = 7;
+            if (cmpBit < 0 || flush == true)
+            {
+                fsout.WriteByte((byte)cmpByte);
+                cmpBit = 7;
+                cmpByte = 0;
+            }
+
+            cmpByte = cmpByte | code << (cmpBit--);
+        }
+
+        public bool Compress()
+        {
+            Calcfrequency();
+
+            MakeHuffmanTree();
+
+            MakeCode(headNode, 0u, 0);
+
+            for (int i = 0; i < 256; i++)
+            {
+                fsout.WriteByte((byte)huffLength[i]);
+                fsout.WriteByte((byte)huffCode[i]);
+            }
+
+            long fileSize = fsin.Length;
+            byte[] result = new byte[8];
+
+            for (int i = 7; i >= 0; i--)
+            {
+                result[i] = (byte)(fileSize & 0xFF);
+                fileSize >>= 8;
+            }
+
+            fsout.Write(result,0, result.Length);
+
+            do
+            {
+                int index = fsin.ReadByte();
+
+                for (int i = huffLength[index] - 1; i >= 0; i--)
+                {
+                    uint bit = 0;
+                    bit = (huffCode[index] >> i) & ~(~0 << 1);
+                    WriteByteFromBit(bit, false);
+                }
+            }
+            while (fsin.Position < fsin.Length);
 
 
-             
+            WriteByteFromBit(0, true);
+
+            return true;
+        }
+
+        bool ReadBitFromFile(ref uint uBit)
+        {
+            if (extBit < 0)
+            {
+                extByte = (uint)fsin.ReadByte();
+                extBit = 7;
+            }
+
+            if (fsout.Position > oriFileSize)
+                return false;
+
+            uint bit = 0;
+            bit = (extByte >> extBit) & ~(~0 << 1);
+            extBit--;
+
+            uBit = bit;
+
+            return true;
+        }
+
+        void InsertIntoHuffTree(int value)
+        {
+            try
+            {
+                if (headNode == null)
+                {
+                    headNode = new HuffmanNode();
+                }
+
+                HuffmanNode curNode = headNode;
+
+                int length = huffLength[value];
+                uint code = huffCode[value];
+
+                while (length > 0)
+                {
+                    uint bit = (code >> length - 1) & ~(~0 << 1);
+
+                    if (bit == 0)
+                    {
+                        if (curNode.mLeft == null)
+                        {
+                            curNode.mLeft = new HuffmanNode();
+                        }
+                        curNode = curNode.mLeft;
+                    }
+                    else
+                    {
+                        if (curNode.mRight == null)
+                        {
+                            curNode.mRight = new HuffmanNode();
+                        }
+                        curNode = curNode.mRight;
+                    }
+
+                    length--;
+                }
+
+                curNode.mValue = (byte)value;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace + ", (" + ex.Message + ")");
+            }
+        }
+
+        bool Extract()
+        {
+            fsin.Seek(0, SeekOrigin.Begin);
+
+            for (int i = 0; i < 256; i++)
+            {
+                huffLength[i] = fsin.ReadByte();
+                huffCode[i] = (byte)fsin.ReadByte();
+
+                if (huffLength[i] > 0)
+                    InsertIntoHuffTree(i);
+            }
+
+            oriFileSize = 0;
+
+            for (int i = 0; i < 8; i++)
+            {
+                oriFileSize <<= 8;
+                oriFileSize |= (long)(fsin.ReadByte() & 0xFF);
+            }
+
+            uint bit = 0;
+            HuffmanNode node = headNode;
+
+            ReadBitFromFile(ref bit);
+
+            do
+            {
+                while (node.mLeft != null && node.mRight != null)
+                {
+                    if (bit == 0)
+                        node = node.mLeft;
+                    else
+                        node = node.mRight;
+
+                    ReadBitFromFile(ref bit);
+                }
+
+                fsout.WriteByte(node.mValue);
+                node = headNode;
+            }
+            while (fsout.Position < oriFileSize);
+
+            return true;
         }
     }
 }

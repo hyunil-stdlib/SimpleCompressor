@@ -8,5 +8,11 @@ C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\De
 C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.exe
 C:\Users\hang\documents\visual studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.pdb
 C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.exe.config
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.exe
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\bin\Debug\Compressor.pdb
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.HuffmanNode.resources
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.Properties.Resources.resources
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.csproj.GenerateResource.Cache
 C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.exe
 C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.pdb
+C:\Users\stdlib\Documents\Visual Studio 2015\Projects\Compressor\Compressor\obj\Debug\Compressor.csprojResolveAssemblyReference.cache
